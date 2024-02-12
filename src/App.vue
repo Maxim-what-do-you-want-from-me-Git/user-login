@@ -1,52 +1,63 @@
-
 <script setup>
 import { ref, onMounted } from 'vue';
 
 let url = "http://localhost:5000/"
 
-let log_email = ref();
-let log_password = ref();
-
-let sI_username = ref();
-let sI_email = ref();
-let sI_password = ref();
+let log_email = ref("");
+let log_password = ref("");
+let signup_username = ref("");
+let signup_email = ref("");
+let signup_password = ref("");
 let responseMessage = ref()
 
-function findSignInValues() {
-  if (sI_email === null | sI_password === null) {
-    console.error('empty pole')
-  }
-  let signInValues = {
-    username: sI_username.value,
-    email: sI_email.value,
-    password: sI_password.value
-  }
 
-  let signInValues_json = JSON.stringify(signInValues)
 
-  console.log(signInValues_json);
-
-  async function postData(url) {
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8'
-      },
-      body: signInValues_json
-    }
-    const response = await fetch(url, requestOptions)
-    const responseData = await response.json()
-    console.log('data sent successfully. ', responseData);
-    // console.log(responseMessage, "inner text:", responseMessage.innerText);
-    responseMessage.value.innerText = responseData.message
+async function postData(url, signInValues_json) {
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8'
+    },
+    body: signInValues_json
   }
-  // 
-  postData(url)
+  const response = await fetch(url, requestOptions)
+  const responseData = await response.json()
+  console.log('data sent successfully. ', responseData);
+  // console.log(responseMessage, "inner text:", responseMessage.innerText);
+  responseMessage.value.innerText = responseData.message
 }
 
-function getLogInData(){
-  if (log_email === null | log_password === null) {
+
+
+// SOGN UP  USER
+function findSignUpValues() {
+  // console.log(signup_email.value, signup_password.value); CHECK VALUES
+  if (signup_email.value == "" || signup_password.value == "" || signup_username.value == "") {
     console.error('empty pole')
+    responseMessage.value.innerText = "empty pole!"
+    return
+  }
+
+  let signInValues = {
+    username: signup_username.value,
+    email: signup_email.value,
+    password: signup_password.value
+  }
+  
+  let signInValues_json = JSON.stringify(signInValues)
+  console.log(signInValues_json);
+
+  // post sign in values to the server
+  postData(url, signInValues_json)
+}
+
+
+
+// LOG IN USER
+function getLogInData() {
+  if (log_email == "" | log_password == "") {
+    console.error('empty pole')
+    return
   }
   let logInValues = {
     email: log_email,
@@ -75,6 +86,7 @@ onMounted(() => {
             <label for="reg-log"></label>
             <div class="card-3d-wrap mx-auto">
               <div class="card-3d-wrapper">
+                <!-- login -->
                 <div class="card-front">
                   <div class="center-wrap">
                     <div class="section text-center">
@@ -85,8 +97,8 @@ onMounted(() => {
                         <i class="input-icon uil uil-at"></i>
                       </div>
                       <div class="form-group mt-2">
-                        <input type="password" name="logpass" class="form-style" placeholder="Your Password" v-model='log_password' id="logpass"
-                          autocomplete="off">
+                        <input type="password" name="logpass" class="form-style" placeholder="Your Password"
+                          v-model='log_password' id="logpass" autocomplete="off">
                         <i class="input-icon uil uil-lock-alt"></i>
                       </div>
                       <a href="#" class="btn mt-4" ref="logsubBtn" @click="getLogInData">submit</a>
@@ -94,27 +106,28 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
+                <!-- signup -->
                 <div class="card-back">
                   <div class="center-wrap">
                     <div class="section text-center">
                       <h4 class="mb-4 pb-3">Sign Up</h4>
                       <div class="form-group">
-                        <input type="text" name="logname" class="form-style" placeholder="Your Full Name" id="logname"
-                          autocomplete="off" v-model="sI_username">
+                        <input required type="text" name="logname" class="form-style" placeholder="Your Full Name" id="logname"
+                          autocomplete="off" v-model="signup_username">
                         <i class="input-icon uil uil-user"></i>
                       </div>
                       <div class="form-group mt-2">
-                        <input type="email" name="logemail" class="form-style" placeholder="Your Email" id="logemail"
-                          autocomplete="off" v-model="sI_email">
+                        <input required type="email" name="logemail" class="form-style" placeholder="Your Email" id="logemail"
+                          autocomplete="off" v-model="signup_email">
                         <i class="input-icon uil uil-at"></i>
                       </div>
                       <div class="form-group mt-2">
-                        <input type="password" name="logpass" class="form-style" placeholder="Your Password" id="logpass"
-                          autocomplete="off" v-model="sI_password">
+                        <input required type="password" name="logpass" class="form-style" placeholder="Your Password" id="logpass"
+                          autocomplete="off" v-model="signup_password">
                         <i class="input-icon uil uil-lock-alt"></i>
                       </div>
                       <p ref="responseMessage">here</p>
-                      <a href="#" class="btn mt-4 signsub" ref="signSubBtn" @click="findSignInValues">submit</a>
+                      <a href="#" class="btn mt-4 signsub" ref="signSubBtn" @click="findSignUpValues">submit</a>
                     </div>
                   </div>
                 </div>
